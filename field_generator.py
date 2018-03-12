@@ -91,23 +91,16 @@ def generate_field():
         ver, hor = randint(ships[-1] - 1, 9), randint(ships[-1] - 1, 9)
         if randint(0,1):
             for i in range(ships[-1]):
-                if (not has_ship(field, (ascii_uppercase[hor], ver + 1))) and\
-                        valid_location(field, (ascii_uppercase[hor], ver + 1)):
-                    print(ver, hor, 1)
-                    field[ver][hor] = 1
-                    ver -= 1
+                print(ver, hor, 1)
+                field[ver][hor] = 1
+                ver -= 1
         else:
             for i in range(ships[-1]):
-                if (not has_ship(field, (ascii_uppercase[hor], ver + 1))) and \
-                        valid_location(field, (ascii_uppercase[hor], ver + 1)):
-                    print(ver, hor, 0)
-                    field[ver][hor] = 1
-                    hor -= 1
+                print(ver, hor, 0)
+                field[ver][hor] = 1
+                hor -= 1
         ships.pop()
     return field
-
-
-
 
 
 
