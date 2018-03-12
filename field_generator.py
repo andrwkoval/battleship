@@ -59,7 +59,8 @@ def is_valid(field):
 
     for i in range(len(field)):
         for j in range(len(field[i])):
-            if valid_location(field, (lets[i], j+1)):
+            if has_ship(field, (lets[i], j+1)) and \
+                    valid_location(field, (lets[i], j+1)):
                 a = ship_size(field, (lets[i], j+1))
                 try:
                     if a[0] >= a[1] and a[1] == 1:
@@ -74,13 +75,51 @@ def is_valid(field):
 
 
 def valid_location(field, coords):
-    if has_ship(field, coords):
-        lets = list(ascii_uppercase[:10])
-        ver, hor = coords[1] - 1, lets.index(coords[0].upper())
-        if (1<=ver<9 and 1<=hor<9) and \
-            (field[ver - 1][hor - 1] == 1 or field[ver - 1][hor + 1] == 1 or
-                field[ver + 1][hor - 1] == 1 or field[ver + 1][hor + 1]):
-            return False
-        return True
+    lets = list(ascii_uppercase[:10])
+    ver, hor = coords[1] - 1, lets.index(coords[0].upper())
+    if (1<=ver<9 and 1<=hor<9) and \
+        (field[ver - 1][hor - 1] == 1 or field[ver - 1][hor + 1] == 1 or
+            field[ver + 1][hor - 1] == 1 or field[ver + 1][hor + 1]):
+        return False
+    return True
+
+
+def generate_field():
+    field = [[0]*10 for i in range(10)]
+    ships = [1]*4 + [2]*3 + [3]*2 + [4]
+    while ships:
+        ver, hor = randint(ships[-1] - 1, 9), randint(ships[-1] - 1, 9)
+        if randint(0,1):
+            for i in range(ships[-1]):
+                if (not has_ship(field, (ascii_uppercase[hor], ver + 1))) and\
+                        valid_location(field, (ascii_uppercase[hor], ver + 1)):
+                    print(ver, hor, 1)
+                    field[ver][hor] = 1
+                    ver -= 1
+        else:
+            for i in range(ships[-1]):
+                if (not has_ship(field, (ascii_uppercase[hor], ver + 1))) and \
+                        valid_location(field, (ascii_uppercase[hor], ver + 1)):
+                    print(ver, hor, 0)
+                    field[ver][hor] = 1
+                    hor -= 1
+        ships.pop()
+    return field
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
