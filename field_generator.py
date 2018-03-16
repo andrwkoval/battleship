@@ -1,5 +1,5 @@
-from string import ascii_uppercase
-from random import randint
+from string import ascii_uppercase as alpha
+import random as rd
 
 
 def read_field(filename):
@@ -14,17 +14,14 @@ def read_field(filename):
 
 
 def has_ship(field, coords):
-    lets = list(ascii_uppercase[:10])
-    return field[coords[1] - 1][lets.index(coords[0].upper())] == 1
+    return field[coords[1] - 1][list(alpha[:10]).index(coords[0].upper())] == 1
 
 
 def ship_size(field, coords):
-    lets = list(ascii_uppercase[:10])
-
     if not has_ship(field, coords):
         return (0, 0)
 
-    ver, hor = coords[1] - 1, lets.index(coords[0].upper())
+    ver, hor = coords[1] - 1, list(alpha[:10]).index(coords[0].upper())
     horizontal, vertical = 1, 1
 
     step = 1
@@ -47,21 +44,21 @@ def ship_size(field, coords):
 
 
 def is_valid(field):
-    lets = list(ascii_uppercase[:10])
+    lets = list(alpha[:10])
     ships = [4]*4 + [3]*6 + [2]*6 + [1]*4
 
     if len([1 for i in field for j in i if j == 1]) != 20:
         return False
 
-    if (field[0][1] and field[1][0]) or (field[0][9] and field[1][9]) or \
+    if (field[0][1] and field[1][0]) or (field[0][8] and field[1][9]) or \
             (field[8][0] and field[9][1]) or (field[8][9] and field[9][8]):
         return False
 
     for i in range(len(field)):
         for j in range(len(field[i])):
-            if has_ship(field, (lets[i], j+1)) and \
-                    valid_location(field, (lets[i], j+1)):
-                a = ship_size(field, (lets[i], j+1))
+            if has_ship(field, (lets[j], i+1)) and \
+                    valid_location(field, (lets[j], i+1)):
+                a = ship_size(field, (lets[j], i+1))
                 try:
                     if a[0] >= a[1] and a[1] == 1:
                         ships.remove(a[0])
@@ -74,12 +71,12 @@ def is_valid(field):
     return True
 
 
-def valid_location(field, coords):
-    lets = list(ascii_uppercase[:10])
-    ver, hor = coords[1] - 1, lets.index(coords[0].upper())
-    if (1<=ver<9 and 1<=hor<9) and \
-        (field[ver - 1][hor - 1] == 1 or field[ver - 1][hor + 1] == 1 or
-            field[ver + 1][hor - 1] == 1 or field[ver + 1][hor + 1]):
+def valid_location(data, coords):
+    lets = list(alpha[:10])
+    y, x = coords[1] - 1, lets.index(coords[0].upper())
+    if (0<y<9 and 0<x<9) and \
+        (data[y - 1][x - 1] or data[y - 1][x + 1] or
+            data[y + 1][x - 1] or data[y + 1][x + 1]):
         return False
     return True
 
@@ -88,31 +85,48 @@ def generate_field():
     field = [[0]*10 for i in range(10)]
     ships = [1]*4 + [2]*3 + [3]*2 + [4]
     while ships:
-        ver, hor = randint(ships[-1] - 1, 9), randint(ships[-1] - 1, 9)
-        if randint(0,1):
+        ver, hor = rd.randint(ships[-1] - 1, 9), rd.randint(ships[-1] - 1, 9)
+        if rd.randint(0,1):
             for i in range(ships[-1]):
-                print(ver, hor, 1)
+                pointer = False
+                if not has_ship(field, (alpha[hor], ver + 1)) and \
+                    valid_location(field, (alpha[hor], ver + 1)):
+                    pointer = True
+                ver -= 1
+                if not pointer:
+                    break
+            if not pointer:
+                continue
+            ver += ships[-1]
+            for i in range(ships[-1]):
                 field[ver][hor] = 1
                 ver -= 1
         else:
             for i in range(ships[-1]):
-                print(ver, hor, 0)
+                pointer = False
+                if not has_ship(field, (alpha[hor], ver + 1)) and \
+                    valid_location(field, (alpha[hor], ver + 1)):
+                    pointer = True
+                hor -= 1
+                if not pointer:
+                    break
+            if not pointer:
+                continue
+            hor += ships[-1]
+            for i in range(ships[-1]):
                 field[ver][hor] = 1
                 hor -= 1
         ships.pop()
-    return field
+    if is_valid(field):
+        return field
+    return generate_field()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+def field_to_str(field):
+    str_field = "    " + "  ".join(list(alpha[:10])) + "\n"
+    for i, j in enumerate(field):
+        if i < 9:
+            str_field += str(i + 1) + "   " + "  ".join(map(str, j)) + "\n"
+        else:
+            str_field += str(i + 1) + "  " + "  ".join(map(str, j)) + "\n"
+    return str_field
