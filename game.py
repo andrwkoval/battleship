@@ -3,13 +3,22 @@ import copy
 
 
 class Ship:
+    """Represents ship as a part of game."""
+
     def __init__(self, bow, horizontal, length):
+        """Initializes ship with bow coordinates and length."""
         self.bow = bow
         self.horizontal = horizontal
         self.__length = length
         self.__hit = [False] * self.__length
 
     def shoot_at(self, tup):
+        """
+        (tup) -> (None)
+        Marks if there is a hit into ship.
+
+        tup: coordinates of the shoot.
+        """
         if self.horizontal:
             for i in range(self.__length):
                 if (self.bow[1] + i, self.bow[0]) == tup:
@@ -24,7 +33,10 @@ class Ship:
 
 
 class Field:
+    """Represents battlefield of the game Battleship."""
+
     def __init__(self):
+        """Initializes a battlefield."""
         self.__ships = generate_field()
         for i in range(len(self.__ships)):
             for j in range(len(self.__ships[i])):
@@ -41,6 +53,13 @@ class Field:
         self.ships = self.__ships
 
     def shoot_at(self, tup):
+        """
+        (tup) -> (bool)
+        Check if there is the ship is shooted.
+
+        tup: coordinates
+        returns: True if the ship was shooted.
+        """
         if isinstance(self.__ships[tup[0]][tup[1]], Ship):
             self.__ships[tup[0]][tup[1]].shoot_at(tup)
             self.__ships[tup[0]][tup[1]] = "X"
@@ -52,6 +71,7 @@ class Field:
             return False
 
     def field_without_ships(self):
+        """Return string representation of the empty field with all turns."""
         field = copy.deepcopy(self.__ships)
         for i in range(len(field)):
             for j in range(len(field)):
@@ -62,6 +82,7 @@ class Field:
         return field_to_str(field)
 
     def field_with_ships(self):
+        """Return string representation of the field with turns and ships."""
         field = copy.deepcopy(self.__ships)
         for i in range(len(field)):
             for j in range(len(field[i])):
@@ -71,10 +92,14 @@ class Field:
 
 
 class Player:
+    """Represents a player of Battleship."""
+
     def __init__(self, name):
+        """Initializes a name of the Player."""
         self.__name = name
 
     def read_position(self):
+        """Reads a position of Player`s turn"""
         pos = input().split(" ")
         try:
             ver, hor = int(pos[1]) - 1, list(alpha[:10]).index(pos[0].upper())
@@ -86,27 +111,35 @@ class Player:
 
 
 class Game:
+    """Represents a process of playing Battleship."""
+
     def __init__(self, current_player=0):
+        """Initializes players."""
         self.__field = [Field(), Field()]
         self.__players = [Player(input("Player 1, enter your name: ")),
                           Player(input("Player 2, enter your name: "))]
         self.__current_player = current_player
 
     def read_position(self):
+        """Reads turns of the players."""
         return self.__players[self.__current_player].read_position()
 
     def field_without_ships(self, index):
+        """Returns empty field."""
         return self.__field[index].field_without_ships()
 
     def field_with_ships(self, index):
+        """Returns current field."""
         return self.__field[index].field_with_ships()
 
     def winner(self, player):
+        """"Check if there is a winner."""
         if self.__field[player - 1].field_with_ships().count("X") == 20:
             return True
         return False
 
     def start_game(self):
+        """Playing the game."""
         print("Game Battleship")
         while True:
             self.__current_player = 0
@@ -148,6 +181,6 @@ class Game:
                 exit()
 
 
-
-game = Game()
-game.start_game()
+if __name__ == "__main__":
+    game = Game()
+    game.start_game()

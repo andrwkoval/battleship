@@ -1,8 +1,21 @@
+"""
+File: field_generator.py.
+
+Author: Andrii Koval
+"""
+
 from string import ascii_uppercase as alpha
 import random as rd
 
 
 def read_field(filename):
+    """
+    (string) -> (list)
+    Read field from file and converts it into lists.
+
+    filename: name of file to read field.
+    returns: field as list.
+    """
     with open(filename, "r", encoding="utf-8", errors="ignore") as file_ships:
         field = [[0] * 10 for i in range(10)]
         data = file_ships.readlines()
@@ -14,10 +27,25 @@ def read_field(filename):
 
 
 def has_ship(field, coords):
+    """
+    (list, tuple) -> (bool)
+    Return if there is a ship in specific coordinatesself.
+
+    field: battleship field.
+    coords: coordinates to check.
+    """
     return field[coords[1] - 1][list(alpha[:10]).index(coords[0].upper())] == 1
 
 
 def ship_size(field, coords):
+    """
+    (list, tuple) -> (tuple(int, int))
+    Count the size of a specific ship.
+
+    field: battleship field.
+    coords: coordinates with ship.
+    returns: size of the ship horizontally and vertically.
+    """
     if not has_ship(field, coords):
         return (0, 0)
 
@@ -44,6 +72,13 @@ def ship_size(field, coords):
 
 
 def is_valid(field):
+    """
+    (list) -> (bool)
+    Check if the playing field is valid.
+
+    field: battleship field.
+    returns: true if there is no mistakes in field.
+    """
     lets = list(alpha[:10])
     ships = [4] * 4 + [3] * 6 + [2] * 6 + [1] * 4
 
@@ -72,6 +107,14 @@ def is_valid(field):
 
 
 def valid_location(data, coords):
+    """
+    (list, tuple) -> (bool)
+    Check if the location of ship is valid.
+
+    data: battleship field.
+    coords: coordinates of the ship.
+    returns: true if location is valid.
+    """
     lets = list(alpha[:10])
     y, x = coords[1] - 1, lets.index(coords[0].upper())
     if (0 < y < 9 and 0 < x < 9) and \
@@ -82,6 +125,12 @@ def valid_location(data, coords):
 
 
 def generate_field():
+    """
+    () -> (list)
+    Generate gamefield for battleship.
+
+    returns: valid playing field.
+    """
     field = [[0] * 10 for i in range(10)]
     ships = [1] * 4 + [2] * 3 + [3] * 2 + [4]
     while ships:
@@ -117,18 +166,25 @@ def generate_field():
                 field[ver][hor] = 1
                 hor -= 1
         ships.pop()
-    if is_valid(field):
-        return field
-    return generate_field()
+    if not is_valid(field):
+        return generate_field()
+    return field
 
 
 def field_to_str(field):
+    """
+    (list) -> (string)
+    Converts list field into string representation.
+
+    field: field as list.
+    returns: field as string.
+    """
     str_field = "    " + "  ".join(list(alpha[:10])) + "\n"
     for i, j in enumerate(field):
         if i < 9:
             str_field += str(i + 1) + " | " + "| ".join(map(str, j))\
-                         + "|" + "\n"
+                + "|" + "\n"
         else:
             str_field += str(i + 1) + "| " + "| ".join(map(str, j))\
-                         + "|" + "\n"
+                + "|" + "\n"
     return str_field
